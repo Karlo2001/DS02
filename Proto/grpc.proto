@@ -1,0 +1,16 @@
+syntax = "proto3";
+package main;
+option go_package = "random/CCBuffers";
+
+service CriticalService {
+    rpc GetCriticalAccess (ClientInfo) returns (UserResponse) {}
+}
+
+message UserResponse {
+    string message = 1;
+}
+
+message ClientInfo {
+    int32 id = 1;
+    string name = 2;
+}
