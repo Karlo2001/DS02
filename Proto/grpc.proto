@@ -1,5 +1,5 @@
 syntax = "proto3";
-package main;
+package CCBuffers;
 option go_package = "random/CCBuffers";
 
 service CriticalService {
