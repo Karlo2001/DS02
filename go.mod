@@ -1,4 +1,4 @@
-module grpc
+module DS02
 
 go 1.17
 
