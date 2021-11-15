@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"log"
 	"net"
+	"strconv"
+	"time"
 
 	pb "DS02/CS_Proto"
 
@@ -13,16 +15,31 @@ import (
 )
 
 var (
-	port = flag.Int("port", 10000, "The server port")
+	port  = flag.Int("port", 10000, "The server port")
+	queue = make([]client, 0)
+	cs    = 0
 )
+
+type client struct {
+	name string
+	id   int32
+}
 
 type criticalServiceServer struct {
 	pb.UnimplementedCriticalServiceServer
 }
 
 func (s *criticalServiceServer) GetCriticalAccess(ctx context.Context, in *pb.ClientInfo) (*pb.UserResponse, error) {
-	// do stuff
-	return &pb.UserResponse{Message: "message"}, nil
+	queue = append(queue, client{id: in.Id, name: in.Name})
+	for {
+		if queue[0].id == in.Id {
+			cs++
+			//Simulate some heavy function
+			time.Sleep(5 * time.Second)
+			queue = queue[1:]
+			return &pb.UserResponse{Message: "The critical section have now been accesed " + strconv.Itoa(cs) + " times"}, nil
+		}
+	}
 }
 
 func main() {

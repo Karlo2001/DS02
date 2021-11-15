@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"log"
+	"os"
+	"strconv"
 
 	pb "DS02/CS_Proto"
 
@@ -15,8 +18,9 @@ var (
 )
 
 var (
-	id   int32
-	name string
+	id       int32
+	name     = "1"
+	actionid int
 )
 
 func main() {
@@ -33,13 +37,32 @@ func main() {
 	// Client connected
 
 	// Make grpc call
-	GetCriticalAccess(client)
+	if len(os.Args) < 2 {
+		fmt.Println("Please specify the id in the command line arguments")
+		os.Exit(1)
+	}
+	tid, err := strconv.Atoi(os.Args[1])
+	if err != nil {
+		fmt.Println("The specified id is not of type int. Please try again")
+		os.Exit(1)
+	}
+	id = int32(tid)
+	for {
+		fmt.Println("---------------------------------------------")
+		fmt.Println("Type 1 to request access to the critical section")
+		fmt.Scanln(&actionid)
+		if actionid == 1 {
+			GetCriticalAccess(client)
+		}
+	}
 }
 
 func GetCriticalAccess(client pb.CriticalServiceClient) {
 	response, err := client.GetCriticalAccess(context.Background(), &pb.ClientInfo{Id: id, Name: name})
 	if err != nil {
 		// do something with response
-		log.Println(response)
+		log.Println(err)
+	} else {
+		fmt.Println(response.Message)
 	}
 }
